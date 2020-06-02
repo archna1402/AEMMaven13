@@ -19,10 +19,10 @@ pipeline {
                 //input ('Do you want to proceed?')
                 script {
                     try {
-                        sh mvn clean install
-                        echo RESULT: ${currentBuild.currentResult}
+                        sh "mvn clean install"
+                        echo "RESULT: ${currentBuild.currentResult}"
                     } catch (Throwable e) {
-                        echo RESULT: ${currentBuild.currentResult}
+                        echo "RESULT: ${currentBuild.currentResult}"
                         echo "Send Error Email!"
                         error "ERROR! Stop pipeline excution!"
                     }
