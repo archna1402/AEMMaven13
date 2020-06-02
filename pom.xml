@@ -19,7 +19,7 @@
     <groupId>AEMMaven13</groupId>
     <artifactId>AEMMaven13</artifactId>
     <packaging>pom</packaging>
-    <version>1.0</version>
+    <version>1.1</version>
     <description>AEMMaven13</description>
 
     <modules>
