@@ -65,7 +65,7 @@ pipeline {
             echo 'Clear dispatcher cache'
             echo 'Clear CDN cache'
             echo 'Send Success Email'
-            mail to: 'archna.014@gmail.com',
+            mail to: 'archna@epsilon.com',
             subject: "Status of Build:${currentBuild.fullDisplayName}, ${env.JOB_NAME} - ${currentBuild.result}",
             body: "Job ${currentBuild.result} - ${env.JOB_NAME} build: ${env.BUILD_NUMBER} has result ${currentBuild.result}"
         }
