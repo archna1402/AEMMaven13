@@ -4,9 +4,7 @@ pipeline {
         jdk 'jdk-8'
         maven 'maven-3.6.3'
     }
-    environment {
-        PATH = "/usr/local/apache-maven-3.6.3:$PATH"
-    }
+    
     stages {
 
         stage('Git Checkout') {
@@ -32,19 +30,30 @@ pipeline {
             }
         }
 
-        stage('Archive Artifacts') {
-            steps {
-                dir('/var/lib/jenkins/.m2/repository/AEMMaven13/AEMMaven13.core/1.0-SNAPSHOT/') {
-                    archiveArtifacts artifacts: '*.jar*',
-                    onlyIfSuccessful: true
-                }
-                dir('/var/lib/jenkins/.m2/repository/AEMMaven13/AEMMaven13.ui.content/1.0-SNAPSHOT/') {
-                    archiveArtifacts artifacts: '*.zip*',
-                    onlyIfSuccessful: true
-                }
-            }
-
-        }
+		stage('Upload Artifacts to Nexus') {
+		    
+				steps{
+					script{
+						def mavenPom = readMavenPom file: 'pom.xml'
+						nexusArtifactUploader artifacts: 
+							[[artifactId: 'AEMMaven13',
+							    classifier: 'apps', 
+								file: "/var/lib/jenkins/.m2/repository/AEMMaven13/AEMMaven13.ui.apps/${mavenPom.version}/AEMMaven13.ui.apps-${mavenPom.version}.zip", 
+								type: 'zip'], 
+								[artifactId: 'AEMMaven13',
+								classifier: 'content',
+								file: "/var/lib/jenkins/.m2/repository/AEMMaven13/AEMMaven13.ui.content/${mavenPom.version}/AEMMaven13.ui.content-${mavenPom.version}.zip", 
+								type: 'zip']],
+								credentialsId: 'nexus3', 
+								groupId: 'AEMMaven13', 
+								nexusUrl: '3.6.165.101:8081', 
+								nexusVersion: 'nexus3', 
+								protocol: 'http', 
+								repository: 'aem-nexus-repo', 
+								version: "${mavenPom.version}"
+						}
+					}
+		}
 
         stage('Deploy to AEM server') {
 
