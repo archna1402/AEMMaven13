@@ -24,13 +24,13 @@ pipeline {
                     } catch (Throwable e) {
                         echo "RESULT: ${currentBuild.currentResult}"
                         echo "Send Error Email!"
-                        error "Stops the pipeline excution!"
+                        error "ERROR! Stop pipeline excution!"
                     }
                 }
             }
         }
 
-		stage('Upload Artifacts to Nexus') {
+	stage('Upload Artifacts to Nexus') {
 		    
 				steps{
 					script{
@@ -53,33 +53,33 @@ pipeline {
 								version: "${mavenPom.version}"
 						}
 					}
-		}
+	}
 
-        stage('Deploy to AEM server') {
+      stage('Deploy to AEM server') {
 
-            steps {
-                echo "Deply to AEM server"
-            }
+				steps {
+					echo "Deply to AEM server"
+					}
 
-        }
+				}
 
-    }
+     }
 
     post {
-        always {
-            echo 'cleanup tasks'
-            deleteDir() /* clean up our workspace */
-        }
         success {
             echo 'Clear dispatcher cache'
             echo 'Clear CDN cache'
-            echo 'Send Success Email'
+            echo "Build Success : : ${env.BUILD_NUMBER}"
+			echo "RESULT: ${currentBuild.currentResult}"
+        }
+        failure {
+            echo "Build Failure : ${env.BUILD_NUMBER}"
+			echo "RESULT: ${currentBuild.currentResult}"
+        }
+		always {
             mail to: 'archna@epsilon.com',
             subject: "Status of Build:${currentBuild.fullDisplayName}, ${env.JOB_NAME} - ${currentBuild.result}",
             body: "Job ${currentBuild.result} - ${env.JOB_NAME} build: ${env.BUILD_NUMBER} has result ${currentBuild.result}"
-        }
-        failure {
-            echo 'Send Failure Email'
         }
     }
 }
