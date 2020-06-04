@@ -9,8 +9,9 @@ pipeline {
 
         stage('Git Checkout') {
             steps {
-                echo 'This stage will be executed first'
-                git 'https://github.com/archna1402/AEMMaven13.git'
+                echo 'Checking out git repository'
+                //git 'https://github.com/archna1402/AEMMaven13.git'
+		git 'https://github.com/adobe/aem-guides-wknd.git'
             }
         }
 
