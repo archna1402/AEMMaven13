@@ -10,16 +10,16 @@ pipeline {
         stage('Git Checkout') {
             steps {
                 echo 'Checking out git repository'
-		git 'https://github.com/adobe/aem-guides-wknd.git'
+				git 'https://github.com/adobe/aem-guides-wknd.git'
             }
         }
 
-        stage('Maven Build') {
+        stage('Build') {
             steps {
                 //input ('Do you want to proceed?')
                 script {
                     try {
-                        sh "mvn clean install"
+                        sh 'mvn clean package' 
                         echo "RESULT: ${currentBuild.currentResult}"
                     } catch (Throwable e) {
                         echo "RESULT: ${currentBuild.currentResult}"
@@ -27,6 +27,22 @@ pipeline {
                         error "ERROR! Stop pipeline excution!"
                     }
                 }
+            }
+        }
+		
+		stage('Test') {
+            steps {
+			  script {
+				try{
+						echo "Eexcuting test cases"
+						sh 'mvn test'
+						echo "Test Cases Executed"
+				    } catch (Throwable e) {
+                        echo "RESULT: ${currentBuild.currentResult}"
+                        echo "Send Error Email!"
+                        error "ERROR! Stop pipeline excution!"
+                    }
+			  }
             }
         }
 
@@ -57,11 +73,13 @@ pipeline {
 
       stage('Deploy to AEM server') {
 
-				steps {
-					echo "Deply to AEM server"
+			steps { 
+					echo "Deply to AEM Author Instance"
+					sh "mvn clean install -PautoInstallPackage -Padobe-public"
+					echo "Deploy to AEM Publish Instance"
+					sh "mvn clean install -PautoInstallPackagePublish -Padobe-public"
 					}
-
-				}
+			}
 
      }
 
@@ -77,7 +95,7 @@ pipeline {
 			echo "RESULT: ${currentBuild.currentResult}"
         }
 		always {
-            mail to: 'archna@epsilon.com',
+            mail to: 'archna@epsilon.com harikrishnan.suresh@epsilonconversant.com',
             subject: "Status of Build:${currentBuild.fullDisplayName}, ${env.JOB_NAME} - ${currentBuild.result}",
             body: "Job ${currentBuild.result} - ${env.JOB_NAME} build: ${env.BUILD_NUMBER} has result ${currentBuild.result}"
         }
