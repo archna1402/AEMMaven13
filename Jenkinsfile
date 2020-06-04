@@ -10,7 +10,6 @@ pipeline {
         stage('Git Checkout') {
             steps {
                 echo 'Checking out git repository'
-                //git 'https://github.com/archna1402/AEMMaven13.git'
 		git 'https://github.com/adobe/aem-guides-wknd.git'
             }
         }
@@ -31,30 +30,30 @@ pipeline {
             }
         }
 
-	stage('Upload Artifacts to Nexus') {
+		stage('Upload Artifacts to Nexus') {
 		    
 				steps{
 					script{
 						def mavenPom = readMavenPom file: 'pom.xml'
 						nexusArtifactUploader artifacts: 
-							[[artifactId: 'AEMMaven13',
+							[[artifactId: 'aem-guides-wknd',
 							    classifier: 'apps', 
-								file: "/var/lib/jenkins/.m2/repository/AEMMaven13/AEMMaven13.ui.apps/${mavenPom.version}/AEMMaven13.ui.apps-${mavenPom.version}.zip", 
+								file: "/var/lib/jenkins/.m2/repository/com/adobe/aem/guides/aem-guides-wknd.ui.apps/${mavenPom.version}/aem-guides-wknd.ui.apps-${mavenPom.version}.zip",  							
 								type: 'zip'], 
-								[artifactId: 'AEMMaven13',
+								[artifactId: 'aem-guides-wknd',
 								classifier: 'content',
-								file: "/var/lib/jenkins/.m2/repository/AEMMaven13/AEMMaven13.ui.content/${mavenPom.version}/AEMMaven13.ui.content-${mavenPom.version}.zip", 
+								file: " /var/lib/jenkins/.m2/repository/com/adobe/aem/guides/aem-guides-wknd.ui.content/${mavenPom.version}/aem-guides-wknd.ui.content-${mavenPom.version}.zip",
 								type: 'zip']],
 								credentialsId: 'nexus3', 
-								groupId: 'AEMMaven13', 
+								groupId: 'com.adobe.aem.guides', 
 								nexusUrl: '3.6.165.101:8081', 
 								nexusVersion: 'nexus3', 
 								protocol: 'http', 
-								repository: 'aem-nexus-repo', 
+								repository: 'aem-wknd-snapshots', 
 								version: "${mavenPom.version}"
 						}
 					}
-	}
+				}	
 
       stage('Deploy to AEM server') {
 
